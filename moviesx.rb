@@ -50,9 +50,11 @@ OptionParser.new do |opt|
         opt.on('-r', '--read',   'This option is used to get the information of the movies.')      { |o| param.read = o }
         opt.on('-u', '--update Movie name [String]', 'Prompts the update function of a movie')   { |o| param.update = o }
         opt.on('-d', '--delete Movie name [String]', 'Prompts the delete function of a movie')   { |o| param.delete = o }
-        opt.on('-f', '--filter query [String]',   'If set, the script will execute a filter by name query with it.')     { |o| param.filter = o }
+        opt.on('-n', '--name [String]',   'If set, the script will execute a filter by name query with it(used with -r parameter).')     { |o| param.name = o }
+        opt.on('-y', '--year [String]',   'If set, the script will execute a filter by year query with it(used with -r parameter).')     { |o| param.year = o }
+        opt.on('-g', '--genre [String]',   'If set, the script will execute a filter by genre query with it(used with -r parameter).')     { |o| param.genre = o }
         opt.on('-i', '--image Movie poster, path to image file [String]', 'Use it to insert a movie poster to te database (use only with -c or -u params)')   { |o| param.image = o }
-        opt.on('-o', '--output, path to html output [String]', 'Use it to define where to make an html file with the result of a search (used with -r parameter)')   { |o| param.output = o }
+        opt.on('-o', '--output', 'Use it to dump an html file with the result of a search (used with -r parameter)')   { |o| param.output = o }
         opt.on_tail('-v', '--version', 'Shows version') { puts "moviesX v0.9"; exit }
         opt.on_tail('-h', '--help', 'This script is used to store information about movies in a mongo data base, you will be able to modify all this information with this script, see options for futher details') { puts "\n\n\n\n"; puts opt; puts "\n\n"; exit }
 end.parse!
@@ -107,7 +109,7 @@ end
 
 def htmlOutput(name, description, lenght, poster, directors, genre, year, imageType, staff)
 
-	archivo = File.new("Pelicula_#{name}.html", "w+")
+	archivo = File.new("/var/www/html/movies/Pelicula.html", "w+")
 	
 	archivo.puts '<!doctype html>'
 	archivo.puts '<html lang="en">'
@@ -117,13 +119,24 @@ def htmlOutput(name, description, lenght, poster, directors, genre, year, imageT
 	archivo.puts 	'<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">'
   	archivo.puts 	'<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>'
  	archivo.puts 	'<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>'
+	archivo.puts	'<style> 
+				hr {
+				  border: 0;
+				  clear:both;
+				  display:block;
+				  width: 96%;               
+				  background-color:black;
+				  height: 1px;
+				}
+			</style>'
 	archivo.puts '</head>'
 	archivo.puts '<body>'
-	archivo.puts 	'<p><b>--------------------------MoviesX---------------------------</b></p>'
+	archivo.puts 	'<hr>'
+	archivo.puts 	'<div class="container" style="background-color: grey;">'
 	archivo.puts 	"<p>You have searched for #{name}:</p>"
 	archivo.puts 	'<br />'
 	archivo.puts 	'<div class="col-md-4">'
-	archivo.puts		"<img src='data:image/#{imageType};base64, #{poster}' alt='Not set'/>"
+	archivo.puts		"<img src='data:image/#{imageType};base64, #{poster}' alt='Not set' class='col-md-12'/>"
 	archivo.puts 	'</div>'
 	archivo.puts 	'<div class="col-md-8">'
 	archivo.puts		'<ul>'
@@ -135,13 +148,22 @@ def htmlOutput(name, description, lenght, poster, directors, genre, year, imageT
 	archivo.puts			"<li>Directors: #{directors}</li>"
 	archivo.puts			"<li>Staff:     #{staff}</li>"
 	archivo.puts			'<br />'
+	archivo.puts			"<li>Resume:     #{description}</li>"
 	archivo.puts		'</ul>'
 	archivo.puts 	'</div>'
-	archivo.puts 	'<p><b>------------------------------------------------------------</b></p>'
 	archivo.puts 	'<br />'
+	archivo.puts 	'<br />'
+	archivo.puts 	'</div>'
+	archivo.puts 	'<br />'
+	archivo.puts 	'<hr>'
 	archivo.puts '</body>'
 	archivo.puts '</html>'
 	
+end
+
+def limitParams()
+##limitar a 2
+
 end
 
 
@@ -242,9 +264,9 @@ if param.read
 	listaPeliculas = []
 		
 
-	# Search query
-	if param.filter		
-		cursor = collection.find(nombre: '#{param.filter}')
+	# Search query by name
+	if param.name && param.name =~ validateString	
+		cursor = collection.find({:nombre => /.*#{param.name}.*/})
 
 		cursor.each do |doc|
 			id =        doc["_id"]
@@ -259,7 +281,40 @@ if param.read
 			puts "#{index}.- #{pelicula[0][:nombre]}"
 			index += 1
 		end
+	# Search query by year
+	elsif param.year && param.year =~ validateNumber	
+		cursor = collection.find({:año => /.*#{param.year}.*/})
 
+		cursor.each do |doc|
+			id =        doc["_id"]
+			nombre =    doc["nombre"]
+
+			pelicula = [:id => id, :nombre => nombre]
+			listaPeliculas << pelicula
+		end
+
+		index = 1
+		listaPeliculas.each do |pelicula|
+			puts "#{index}.- #{pelicula[0][:nombre]}"
+			index += 1
+		end
+	# Search query by genre
+	elsif param.genre && param.genre =~ validateString
+		cursor = collection.find({:generos => /.*#{param.genre}.*/})
+
+		cursor.each do |doc|
+			id =        doc["_id"]
+			nombre =    doc["nombre"]
+
+			pelicula = [:id => id, :nombre => nombre]
+			listaPeliculas << pelicula
+		end
+
+		index = 1
+		listaPeliculas.each do |pelicula|
+			puts "#{index}.- #{pelicula[0][:nombre]}"
+			index += 1
+		end
 	# Search everything	
 	else
 		cursor = collection.find
@@ -308,7 +363,7 @@ if param.read
 		if param.output
 		
 			htmlOutput(nombre, sinopsis, duracion, poster, directores, generos, año, 'png', actores)
-			puts "http://mechsolutions.sytes.net/Pelicula_#{nombre}.html/"
+			puts "http://mechsolutions.sytes.net/movies/Pelicula.html/"
 
 		#output terminal
 		else
