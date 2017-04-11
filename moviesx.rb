@@ -27,7 +27,7 @@ class String
   def bg_blue;        "\e[44m#{self}\e[0m" end
   def bg_magenta;     "\e[45m#{self}\e[0m" end
   def bg_cyan;        "\e[46m#{self}\e[0m" end
-  def bg_gray;        "\e[47m#{self}\e[0m" end
+  def bg_grey;        "\e[47m#{self}\e[0m" end
   
   def bold;           "\e[1m#{self}\e[22m" end
   def italic;         "\e[3m#{self}\e[23m" end
@@ -48,8 +48,8 @@ OptionParser.new do |opt|
         opt.banner = "Usage:ruby moviesx.rb [options]\n\n"
         opt.on('-c', '--create', 'This option is used to prompt the creation of a new register') { |o| param.create = o }
         opt.on('-r', '--read',   'This option is used to get the information of the movies.')      { |o| param.read = o }
-        opt.on('-u', '--update Movie name [String]', 'Prompts the update function of a movie')   { |o| param.update = o }
-        opt.on('-d', '--delete Movie name [String]', 'Prompts the delete function of a movie')   { |o| param.delete = o }
+#        opt.on('-u', '--update Movie name [String]', 'Prompts the update function of a movie')   { |o| param.update = o }
+#       opt.on('-d', '--delete Movie name [String]', 'Prompts the delete function of a movie')   { |o| param.delete = o }
         opt.on('-n', '--name [String]',   'If set, the script will execute a filter by name query with it(used with -r parameter).')     { |o| param.name = o }
         opt.on('-y', '--year [String]',   'If set, the script will execute a filter by year query with it(used with -r parameter).')     { |o| param.year = o }
         opt.on('-g', '--genre [String]',   'If set, the script will execute a filter by genre query with it(used with -r parameter).')     { |o| param.genre = o }
@@ -161,19 +161,42 @@ def htmlOutput(name, description, lenght, poster, directors, genre, year, imageT
 	
 end
 
-def limitParams()
-##limitar a 2
-
+def limitParams(param)
+	count = 0
+	if param.read
+		if param.name; count += 1; end
+		if param.year; count += 1; end
+		if param.genre; count += 1; end
+		if count > 1 
+			abort ("You can only use 1 type of filter.")
+		end
+	end
+end
+def validateParams(param,validateString,validateNumber)
+	if param.name
+		if !param.name.validate(validateString)
+			abort("Please use a valid name, try again.")
+		end
+	elsif param.genre
+		if !param.genre.validate(validateString)
+			abort("Please use a valid genre, try again.")
+		end
+	elsif param.year
+		if !param.year.validate(validateNumber)
+			abort("Please use a valid year, try again.")
+		end
+	end
 end
 
-
+limitParams(param)
+validateParams(param,validateString,validateNumber)
 #Programa principal
 puts "Welcome to MoviesX"
 encoded_image = imageProcess(param.image)
 
 if param.create
 
-	puts "You are going to register a new movie"
+	puts "You are going to register a new movie".brown
 		
 
 	puts "Movie name: "
@@ -240,7 +263,7 @@ if param.create
 
 	result = collection.insert_one(pelicula) 
 	if result.n  == 1
-		puts "Pelicula insertada"
+		puts "Pelicula insertada".brown
 	end
 
 end
@@ -248,8 +271,8 @@ end
 
 if param.read
 
-	puts "you are getting the movies"
-	puts "--------------------------"
+	puts "You are getting the movies".brown
+	puts "--------------------------".brown
 	id     = ""
 	nombre = ""
 	año    = ""
@@ -265,7 +288,7 @@ if param.read
 		
 
 	# Search query by name
-	if param.name && param.name =~ validateString	
+	if param.name	
 		cursor = collection.find({:nombre => /.*#{param.name}.*/})
 
 		cursor.each do |doc|
@@ -278,11 +301,11 @@ if param.read
 
 		index = 1
 		listaPeliculas.each do |pelicula|
-			puts "#{index}.- #{pelicula[0][:nombre]}"
+			puts "#{index}.- #{pelicula[0][:nombre]}".bg_grey.black
 			index += 1
 		end
 	# Search query by year
-	elsif param.year && param.year =~ validateNumber	
+	elsif param.year
 		cursor = collection.find({:año => /.*#{param.year}.*/})
 
 		cursor.each do |doc|
@@ -295,11 +318,13 @@ if param.read
 
 		index = 1
 		listaPeliculas.each do |pelicula|
-			puts "#{index}.- #{pelicula[0][:nombre]}"
+			puts "#{index}.- #{pelicula[0][:nombre]}".bg_grey.black
+
+
 			index += 1
 		end
 	# Search query by genre
-	elsif param.genre && param.genre =~ validateString
+	elsif param.genre
 		cursor = collection.find({:generos => /.*#{param.genre}.*/})
 
 		cursor.each do |doc|
@@ -312,7 +337,9 @@ if param.read
 
 		index = 1
 		listaPeliculas.each do |pelicula|
-			puts "#{index}.- #{pelicula[0][:nombre]}"
+			puts "#{index}.- #{pelicula[0][:nombre]}".bg_grey.black
+
+
 			index += 1
 		end
 	# Search everything	
@@ -329,7 +356,9 @@ if param.read
 
 		index = 1
 		listaPeliculas.each do |pelicula|
-			puts "#{index}.- #{pelicula[0][:nombre]}"
+			puts "#{index}.- #{pelicula[0][:nombre]}".bg_grey.black
+
+
 			index += 1
 		end
 	end

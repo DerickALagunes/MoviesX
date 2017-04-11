@@ -35,5 +35,38 @@ sudo apt-get install -y mongodb-org
 
 #################################################################################################
 
-echo 'ruby version 1.9??'
+echo 'ruby'
 sudo apt-get install ruby-full
+sudo gem install mongo
+sudo gem install catpix
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
