@@ -133,26 +133,27 @@ def htmlOutput(name, description, lenght, poster, directors, genre, year, imageT
 	archivo.puts '<body>'
 	archivo.puts 	'<hr>'
 	archivo.puts 	'<div class="container" style="background-color: grey;">'
-	archivo.puts 	"<p>You have searched for #{name}:</p>"
+	archivo.puts 	"<h3>You have searched for #{name}:</h3>"
 	archivo.puts 	'<br />'
 	archivo.puts 	'<div class="col-md-4">'
 	archivo.puts		"<img src='data:image/#{imageType};base64, #{poster}' alt='Not set' class='col-md-12'/>"
 	archivo.puts 	'</div>'
 	archivo.puts 	'<div class="col-md-8">'
 	archivo.puts		'<ul>'
-	archivo.puts			"<li>Movie:  #{name}</li>"
-	archivo.puts			"<li>Lenght: #{lenght}</li>"
-	archivo.puts			"<li>Genre:  #{genre}</li>"
-	archivo.puts			"<li>Year:   #{year}</li>"
+	archivo.puts			"<li><b>Movie:</b>  #{name}</li>"
+	archivo.puts			"<li><b>Lenght:</b> #{lenght}</li>"
+	archivo.puts			"<li><b>Genre:</b>  #{genre}</li>"
+	archivo.puts			"<li><b>Year:</b>   #{year}</li>"
 	archivo.puts			"<br />"
-	archivo.puts			"<li>Directors: #{directors}</li>"
-	archivo.puts			"<li>Staff:     #{staff}</li>"
+	archivo.puts			"<li><b>Directors:</b>  #{directors}</li>"
+	archivo.puts			"<li><b>Staff:</b>      #{staff}</li>"
 	archivo.puts			'<br />'
-	archivo.puts			"<li>Resume:     #{description}</li>"
+	archivo.puts			"<li><b>Resume:</b> #{description}</li>"
 	archivo.puts		'</ul>'
 	archivo.puts 	'</div>'
-	archivo.puts 	'<br />'
-	archivo.puts 	'<br />'
+	archivo.puts 	'<div class="col-md-12">
+				<br />
+			 </div>'
 	archivo.puts 	'</div>'
 	archivo.puts 	'<br />'
 	archivo.puts 	'<hr>'
