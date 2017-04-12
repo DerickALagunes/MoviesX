@@ -37,9 +37,9 @@ class String
 end
 
 validateDate   = /^\D*(\d\d\d\d)\D+(\d\d?)\D+(\d\d?)\D*$/
-validateString = /\A[a-zA-Z0-9@#\*\$\^\(\)_\+\-=,\.\?: !áéíóúÁÉÍÓÚ]+\z/
+validateString = /\A[a-zA-Z0-9@#\*\$\^\(\)_\+\-=,\.\?: !áéíóúÁÉÍÓÚñÑ]+\z/
 validateNumber = /^\d+$/
-validateText   = /\A[a-zA-Z0-9@#\*\$\^\(\)_\+\-=,\.\?: \n!áéíóúÁÉÍÓÚ]+\z/
+validateText   = /\A[a-zA-Z0-9@#\*\$\^\(\)_\+\-=,\.\?: \n!áéíóúÁÉÍÓÚñÑ]+\z/
 
 
 #Parse parameters
@@ -393,7 +393,7 @@ if param.read
 		if param.output
 		
 			htmlOutput(nombre, sinopsis, duracion, poster, directores, generos, año, 'png', actores)
-			puts "http://mechsolutions.sytes.net/movies/Pelicula.html/"
+			puts "http://mechsolutions.sytes.net/movies/Pelicula.html"
 
 		#output terminal
 		else
